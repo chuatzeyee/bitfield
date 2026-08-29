@@ -1,0 +1,48 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>RUNNING</title>
+<body>
+<script type="module">
+import { computeCells, rngFrom, messageBits, movedLayer, bboxOf } from "./js/engine.js";
+import { svgString } from "./js/export.js";
+import { PRESETS, baseDoc } from "./js/presets.js";
+
+const results = [];
+const check = (name, ok) => results.push((ok ? "PASS " : "FAIL ") + name);
+
+try {
+  const r1 = rngFrom("GENEO"), r2 = rngFrom("GENEO");
+  check("rng deterministic", r1() === r2() && r1() === r2());
+
+  check("message bits", messageBits("A") === "01000001");
+
+  const p = PRESETS["usb trident"]();
+  const cells = computeCells(p.doc, p.layers);
+  check("field has cells", cells.length > 1000);
+  check("trident has bold cells", cells.some((c) => c.bold && c.color === "#141414"));
+  check("terminals are red", cells.some((c) => c.bold && c.color === "#ba2029"));
+
+  const again = computeCells(p.doc, p.layers);
+  check("render deterministic", JSON.stringify(cells) === JSON.stringify(again));
+
+  const punchDoc = baseDoc();
+  const punch = [{ id: "t1", type: "rect", x: 0, y: 0, w: punchDoc.width, h: punchDoc.height, visible: true, mode: "punch", color: "#000" }];
+  check("punch empties field", computeCells(punchDoc, punch).length === 0);
+
+  const svg = svgString(p.doc, p.layers);
+  check("svg header", svg.startsWith("<?xml"));
+  check("svg has digits", /<text[^>]*font-weight="900"/.test(svg));
+  check("svg well formed", !new DOMParser().parseFromString(svg, "image/svg+xml").querySelector("parsererror"));
+
+  const moved = movedLayer(p.layers[0], 10, -5);
+  check("movedLayer immutable", moved !== p.layers[0] && moved.x1 === p.layers[0].x1 + 10);
+
+  const cv = document.createElement("canvas").getContext("2d");
+  const bb = bboxOf({ type: "text", text: "HI", size: 100, x: 50, y: 200 }, cv, "serif");
+  check("text bbox sane", bb[0] === 50 && bb[2] > 0 && bb[3] === 100);
+} catch (e) {
+  results.push("FAIL exception: " + e.message);
+}
+document.title = results.some((r) => r.startsWith("FAIL")) ? "FAILED" : "ALL PASS";
+document.body.textContent = results.join("\n");
+</script>
