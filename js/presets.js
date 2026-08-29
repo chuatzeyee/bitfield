@@ -67,8 +67,8 @@ export const PRESETS = {
   headline: () => ({
     doc: baseDoc({ seed: "TYPE", pattern: "gradient down", density: 0.9 }),
     layers: [
-      layer({ name: "big word", type: "text", text: "HELLO", x: 210, y: 620, size: 360, weight: 900, tracking: 6, color: INK }),
-      layer({ name: "kicker", type: "text", text: "BINARY FIELD STUDIO", x: 220, y: 780, size: 52, weight: 500, tracking: 22, mode: "solid", color: RED }),
+      layer({ name: "big word", type: "text", text: "HELLO", x: 160, y: 600, size: 310, weight: 900, tracking: 6, color: INK }),
+      layer({ name: "kicker", type: "text", text: "BINARY FIELD STUDIO", x: 170, y: 760, size: 52, weight: 500, tracking: 22, mode: "solid", color: RED }),
     ],
   }),
   blank: () => ({ doc: baseDoc({ seed: "SEED" }), layers: [] }),

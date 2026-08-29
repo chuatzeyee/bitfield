@@ -7,7 +7,28 @@ where a USB trident was picked out of a field of binary.
 
 Live at https://chuatzeyee.github.io/bitfield/
 
-![The default USB trident preset](docs/screenshot.png)
+![The editor with the default USB trident preset](docs/screenshot.png)
+
+## Presets
+
+Each preset shows a different layer mode in action: bits (bold digits fill
+the shape), punch (the shape cuts a hole), and solid (plain shapes on top).
+
+| usb trident (bits) | heart (bits) |
+| --- | --- |
+| ![USB trident preset](docs/preset-usb-trident.png) | ![Heart preset](docs/preset-heart.png) |
+| **smiley (punch eyes and mouth)** | **headline (bits text plus solid caption)** |
+| ![Smiley preset](docs/preset-smiley.png) | ![Headline preset](docs/preset-headline.png) |
+
+## Patterns
+
+Patterns shape the density of the faint background field:
+
+![All eight field patterns](docs/patterns.png)
+
+Previews regenerate from `docs/capture.html` (serve the repo, then screenshot
+`docs/capture.html?preset=NAME` for a preset or `docs/capture.html` for the
+pattern montage).
 
 ## What it does
 

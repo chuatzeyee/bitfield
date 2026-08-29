@@ -1,0 +1,51 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>capture</title>
+<style>
+@font-face { font-family: "Canela"; src: url("../fonts/canelaweb-regular.ttf"); font-weight: 400; }
+@font-face { font-family: "Canela"; src: url("../fonts/canelaweb-medium.ttf"); font-weight: 500; }
+@font-face { font-family: "Canela"; src: url("../fonts/canelaweb-black.ttf"); font-weight: 900; }
+body { margin: 0; }
+canvas { display: block; }
+</style>
+<body>
+<script type="module">
+import { renderCanvas, PATTERNS } from "../js/engine.js";
+import { PRESETS, baseDoc } from "../js/presets.js";
+
+const q = new URLSearchParams(location.search);
+await Promise.all(["400 22px Canela", "500 60px Canela", "900 22px Canela", "900 360px Canela"]
+  .map((f) => document.fonts.load(f)));
+
+const cv = document.createElement("canvas");
+document.body.append(cv);
+
+if (q.get("preset")) {
+  const p = PRESETS[q.get("preset")]();
+  cv.width = p.doc.width;
+  cv.height = p.doc.height;
+  renderCanvas(cv.getContext("2d"), p.doc, p.layers);
+} else {
+  const names = Object.keys(PATTERNS);
+  const tw = 330, th = 220, cap = 30;
+  cv.width = tw * 4;
+  cv.height = (th + cap) * 2;
+  const c = cv.getContext("2d");
+  c.fillStyle = "#f4efe2";
+  c.fillRect(0, 0, cv.width, cv.height);
+  names.forEach((name, i) => {
+    const doc = baseDoc({ pattern: name, faint: "#8d7a4e", cell: 16, width: 660, height: 440 });
+    const t = document.createElement("canvas");
+    t.width = doc.width;
+    t.height = doc.height;
+    renderCanvas(t.getContext("2d"), doc, []);
+    const x = (i % 4) * tw, y = Math.floor(i / 4) * (th + cap);
+    c.drawImage(t, x, y, tw, th);
+    c.fillStyle = "#1d1a14";
+    c.font = "14px monospace";
+    c.textAlign = "center";
+    c.fillText(name, x + tw / 2, y + th + 20);
+  });
+}
+document.title = "READY";
+</script>
