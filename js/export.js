@@ -21,6 +21,11 @@ export function exportPNG(doc, layers, scale) {
 const esc = (s) =>
   String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
+// Canela is a local font; fall back to the imported Google faces
+// so a standalone SVG still renders close to the canvas.
+const famChain = (f) =>
+  f === "Fraunces" ? "Fraunces, serif" : /mono/i.test(f) ? `${f}, monospace` : `${f}, Fraunces, serif`;
+
 function svgShape(ly) {
   if (ly.type === "rect")
     return `<rect x="${ly.x}" y="${ly.y}" width="${ly.w}" height="${ly.h}" rx="${ly.rx || 0}" fill="${ly.color}"/>`;
@@ -30,14 +35,15 @@ function svgShape(ly) {
     return `<line x1="${ly.x1}" y1="${ly.y1}" x2="${ly.x2}" y2="${ly.y2}" stroke="${ly.color}" stroke-width="${ly.width}" stroke-linecap="round"/>`;
   if (ly.type === "polygon")
     return `<polygon points="${ly.points.map((p) => p.join(",")).join(" ")}" fill="${ly.color}"/>`;
-  return `<text x="${ly.x}" y="${ly.y}" font-size="${ly.size}" font-weight="${ly.weight || 400}" letter-spacing="${ly.tracking || 0}" fill="${ly.color}">${esc(ly.text)}</text>`;
+  const fam = ly.font ? ` font-family="${esc(famChain(ly.font))}"` : "";
+  return `<text x="${ly.x}" y="${ly.y}" font-size="${ly.size}" font-weight="${ly.weight || 400}" letter-spacing="${ly.tracking || 0}" fill="${ly.color}"${fam}>${esc(ly.text)}</text>`;
 }
 
 export function svgString(doc, layers) {
   const out = [
     `<?xml version="1.0" encoding="UTF-8"?>`,
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${doc.width}" height="${doc.height}" viewBox="0 0 ${doc.width} ${doc.height}" font-family="${esc(doc.font)}, serif">`,
-    `<style>@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,100..900&amp;display=swap');</style>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${doc.width}" height="${doc.height}" viewBox="0 0 ${doc.width} ${doc.height}" font-family="${esc(famChain(doc.font))}">`,
+    `<style>@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap');</style>`,
     `<rect width="${doc.width}" height="${doc.height}" fill="${doc.bg}"/>`,
   ];
   const cells = computeCells(doc, layers);

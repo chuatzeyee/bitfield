@@ -7,44 +7,45 @@
 <meta name="description" content="Draw posters out of 1s and 0s: layered shapes and text rasterized into a seeded binary field, exported as PNG or SVG.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,100..900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,100..900&family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header>
-  <div id="brand">BITFIELD <span>01000010 01000110</span></div>
+  <div id="brand">Bitfield</div>
   <div id="actions">
-    <button id="undo" title="ctrl+z">undo</button>
-    <button id="redo" title="ctrl+shift+z">redo</button>
+    <button id="undo" title="ctrl+z">Undo</button>
+    <button id="redo" title="ctrl+shift+z">Redo</button>
     <select id="preset" title="preset"></select>
     <select id="pngscale" title="png scale">
-      <option value="1">png 1x</option>
-      <option value="2" selected>png 2x</option>
-      <option value="3">png 3x</option>
-      <option value="4">png 4x</option>
+      <option value="1">PNG 1x</option>
+      <option value="2" selected>PNG 2x</option>
+      <option value="3">PNG 3x</option>
+      <option value="4">PNG 4x</option>
     </select>
-    <button id="png">export png</button>
-    <button id="svg">export svg</button>
-    <button id="save">save json</button>
-    <label class="filebtn">load json<input id="load" type="file" accept=".json,application/json"></label>
+    <button id="png">Export PNG</button>
+    <button id="svg">Export SVG</button>
+    <button id="save">Save JSON</button>
+    <label class="filebtn">Load JSON<input id="load" type="file" accept=".json,application/json"></label>
   </div>
 </header>
 <main>
   <aside id="left">
-    <h2>add layer</h2>
+    <h2>Add layer</h2>
     <div id="tools"></div>
-    <h2>field</h2>
+    <h2>Field</h2>
     <div id="docpanel"></div>
   </aside>
   <section id="stage"><canvas id="board"></canvas></section>
   <aside id="right">
-    <h2>layers</h2>
+    <h2>Layers</h2>
     <div id="layers"></div>
-    <h2>selected</h2>
+    <h2>Selected</h2>
     <div id="props"></div>
-    <p class="hint">drag on the canvas to move a layer, arrows to nudge, delete to remove. bits layers fill with bold digits, punch layers cut holes in the field, solid layers draw plain shapes on top.</p>
+    <p class="hint">Drag on the canvas to move a layer, arrows to nudge, delete to remove. Bits layers fill with bold digits, punch layers cut holes in the field, solid layers draw plain shapes on top.</p>
   </aside>
 </main>
+<footer>(c) 2026, Chua Tze Yee</footer>
 <script type="module" src="js/app.js"></script>
 </body>
 </html>

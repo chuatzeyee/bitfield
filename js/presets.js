@@ -24,7 +24,7 @@ export function baseDoc(over = {}) {
     bg: "#faf6ec",
     faint: "#e6d5a4",
     showField: true,
-    font: "Fraunces",
+    font: "Canela",
     ...over,
   };
 }

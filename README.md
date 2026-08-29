@@ -37,14 +37,23 @@ It is a static page with ES modules, so serve it over HTTP:
 python3 -m http.server 8000
 ```
 
-then open http://localhost:8000/. No build step, no dependencies. Fonts
-(Fraunces and IBM Plex Mono) load from Google Fonts.
+then open http://localhost:8000/. No build step, no dependencies.
+
+## Fonts
+
+- **Canela** ships locally in `fonts/` (weights 100, 400, 500, 700, 900) and
+  is the default field and heading font. It is a licensed typeface included
+  under the repository owner's license; do not reuse it outside this project.
+  Exported SVGs fall back to Fraunces on machines without Canela installed.
+- **Fraunces** and **JetBrains Mono** load from Google Fonts under the SIL
+  Open Font License.
 
 ## Layout
 
 ```
 index.html      page shell
-style.css       dark UI theme
+style.css       editorial paper theme
+fonts/          local Canela ttfs
 js/engine.js    seeded RNG, patterns, mask rasterizer, canvas renderer
 js/app.js       state, undo, panels, canvas interaction
 js/export.js    PNG, SVG, and JSON export
@@ -53,4 +62,5 @@ js/presets.js   starting documents
 
 ## License
 
-MIT. Fonts are served from Google Fonts under the SIL Open Font License.
+MIT for the code. Canela is licensed separately, see Fonts above. Google
+Fonts families are under the SIL Open Font License.

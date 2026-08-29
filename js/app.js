@@ -6,6 +6,8 @@ let state = defaultState();
 let undoStack = [];
 let redoStack = [];
 
+const FONT_CHOICES = ["Canela", "Fraunces", "JetBrains Mono", "Georgia", "serif"];
+
 const $ = (s) => document.querySelector(s);
 const canvas = $("#board");
 const ctx = canvas.getContext("2d");
@@ -105,7 +107,7 @@ const DOC_FIELDS = [
   ["bg", "background", "color"],
   ["faint", "faint ink", "color"],
   ["showField", "show field", "checkbox"],
-  ["font", "font", "select", ["Fraunces", "IBM Plex Mono", "Georgia", "serif"]],
+  ["font", "font", "select", FONT_CHOICES],
 ];
 
 function docInput(key, kind, options) {
@@ -288,9 +290,15 @@ function renderProps() {
     const wSel = h("select", {
       onchange: (e) => { pushUndo(); patchLayer(ly.id, { weight: +e.target.value }); repaint(); },
     });
-    for (const w of [100, 300, 400, 500, 700, 900])
+    for (const w of [100, 400, 500, 700, 900])
       wSel.append(h("option", { value: w, ...(w === (ly.weight || 400) ? { selected: "" } : {}) }, w));
     box.append(h("label", { class: "row" }, h("span", {}, "weight"), wSel));
+    const fSel = h("select", {
+      onchange: (e) => { pushUndo(); patchLayer(ly.id, { font: e.target.value }); repaint(); },
+    });
+    for (const f of FONT_CHOICES)
+      fSel.append(h("option", { value: f, ...(f === (ly.font || state.doc.font) ? { selected: "" } : {}) }, f));
+    box.append(h("label", { class: "row" }, h("span", {}, "font"), fSel));
   }
 }
 
@@ -382,7 +390,9 @@ function wireHeader() {
         const s = JSON.parse(text);
         if (!s.doc || !Array.isArray(s.layers)) throw new Error("not a bitfield file");
         pushUndo();
-        state = { doc: { ...baseDoc(), ...s.doc }, layers: s.layers, selectedId: null };
+        const doc = { ...baseDoc(), ...s.doc };
+        if (doc.font === "IBM Plex Mono") doc.font = "JetBrains Mono";
+        state = { doc, layers: s.layers, selectedId: null };
         refresh();
       } catch (err) {
         alert("Could not load that file: " + err.message);
@@ -404,6 +414,7 @@ function refresh() {
 wireHeader();
 refresh();
 document.fonts.ready.then(repaint);
+document.fonts.addEventListener("loadingdone", repaint);
 
 // exposed for headless testing
 window.bitfield = { getState: () => state, svgString };

@@ -3,7 +3,7 @@
 <title>RUNNING</title>
 <body>
 <script type="module">
-import { computeCells, rngFrom, messageBits, movedLayer, bboxOf } from "./js/engine.js";
+import { computeCells, rngFrom, messageBits, movedLayer, bboxOf, renderCanvas, famq } from "./js/engine.js";
 import { svgString } from "./js/export.js";
 import { PRESETS, baseDoc } from "./js/presets.js";
 
@@ -40,6 +40,19 @@ try {
   const cv = document.createElement("canvas").getContext("2d");
   const bb = bboxOf({ type: "text", text: "HI", size: 100, x: 50, y: 200 }, cv, "serif");
   check("text bbox sane", bb[0] === 50 && bb[2] > 0 && bb[3] === 100);
+
+  check("famq quotes spaced families", famq("JetBrains Mono") === '"JetBrains Mono"' && famq("Georgia") === "Georgia");
+
+  const tdoc = baseDoc({ showField: false, bg: "#ffffff" });
+  const tcv = document.createElement("canvas");
+  tcv.width = tdoc.width;
+  tcv.height = tdoc.height;
+  const tc = tcv.getContext("2d", { willReadFrequently: true });
+  renderCanvas(tc, tdoc, [{ id: "s1", type: "text", text: "SOLID", x: 100, y: 500, size: 200, weight: 700, visible: true, mode: "solid", color: "#ba2029", font: "Georgia" }]);
+  const px = tc.getImageData(0, 0, tdoc.width, tdoc.height).data;
+  let red = 0;
+  for (let i = 0; i < px.length; i += 4) if (px[i] > 150 && px[i + 1] < 90) red++;
+  check("solid text uses layer color", red > 500);
 } catch (e) {
   results.push("FAIL exception: " + e.message);
 }

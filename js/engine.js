@@ -35,6 +35,17 @@ export function messageBits(msg) {
   return [...s].map((c) => c.charCodeAt(0).toString(2).padStart(8, "0")).join("");
 }
 
+// Canvas font shorthand silently ignores unquoted family names with spaces.
+export const famq = (f) => (/[ ]/.test(f) ? `"${f}"` : f);
+
+const textFont = (ly, font) => `${ly.weight || 400} ${ly.size}px ${famq(ly.font || font)}`;
+
+// Canvas does not wait for @font-face loads; kick the load so the
+// document.fonts loadingdone repaint can redraw with the real face.
+const ensureFont = (spec) => {
+  if (!document.fonts.check(spec)) document.fonts.load(spec);
+};
+
 export function drawShape(c, ly, font, color) {
   const fill = color || ly.color;
   c.fillStyle = fill;
@@ -60,7 +71,8 @@ export function drawShape(c, ly, font, color) {
     c.closePath();
     c.fill();
   } else if (ly.type === "text") {
-    c.font = `${ly.weight || 400} ${ly.size}px ${font}`;
+    ensureFont(textFont(ly, font));
+    c.font = textFont(ly, font);
     c.letterSpacing = (ly.tracking || 0) + "px";
     c.textAlign = "left";
     c.textBaseline = "alphabetic";
@@ -73,7 +85,8 @@ const maskCache = new Map();
 
 function maskFor(doc, ly) {
   const key = ly.id;
-  const stamp = JSON.stringify([doc.width, doc.height, doc.font, ly]);
+  const loaded = ly.type === "text" ? document.fonts.check(textFont(ly, doc.font)) : true;
+  const stamp = JSON.stringify([doc.width, doc.height, doc.font, loaded, ly]);
   const hit = maskCache.get(key);
   if (hit && hit.stamp === stamp) return hit.data;
   const cv = document.createElement("canvas");
@@ -130,8 +143,10 @@ export function renderCanvas(ctx, doc, layers) {
   const cells = computeCells(doc, layers);
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  const boldFont = `900 ${doc.cell}px ${doc.font}`;
-  const faintFont = `400 ${Math.round(doc.cell * 0.85)}px ${doc.font}`;
+  const boldFont = `900 ${doc.cell}px ${famq(doc.font)}`;
+  const faintFont = `400 ${Math.round(doc.cell * 0.85)}px ${famq(doc.font)}`;
+  ensureFont(boldFont);
+  ensureFont(faintFont);
   let last = "";
   for (const c of cells) {
     const f = c.bold ? boldFont : faintFont;
@@ -159,7 +174,7 @@ export function bboxOf(ly, mctx, font) {
     const x0 = Math.min(...xs), y0 = Math.min(...ys);
     return [x0, y0, Math.max(...xs) - x0, Math.max(...ys) - y0];
   }
-  mctx.font = `${ly.weight || 400} ${ly.size}px ${font}`;
+  mctx.font = textFont(ly, font);
   mctx.letterSpacing = (ly.tracking || 0) + "px";
   const w = mctx.measureText(ly.text).width;
   mctx.letterSpacing = "0px";
