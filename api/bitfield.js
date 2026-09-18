@@ -17,6 +17,7 @@ globalThis.document = {
 
 function layoutHeadline(width, height, text, ink) {
   if (!text) return [];
+  if (text.length > 10) text = text.slice(0, 10) + "…";
   const size = Math.min(width / (text.length * 0.62), height * 0.45);
   const marginX = width * 0.05;
   const marginY = height * 0.08;
