@@ -9,17 +9,37 @@
 <script type="module">
 import { renderCanvas, PATTERNS } from './js/engine.js';
 
+const q = new URLSearchParams(location.search);
 const canvas = document.getElementById('board');
 const doc = {
-  width: 1920, height: 1080, cell: 16, seed: 'KIOSK',
+  width: 1920, height: 1080, cell: Number(q.get('cell')) || 16, seed: q.get('seed') || 'KIOSK',
   charset: '01', bitSource: 'random', message: 'BITFIELD',
-  pattern: 'waves', density: 0.55,
-  bg: '#0a0f14', faint: '#1f6f5c', showField: true, font: 'monospace',
+  pattern: q.get('pattern') || 'waves', density: Number(q.get('density')) || 0.55,
+  bg: '#' + (q.get('bg') || '0a0f14'), faint: '#' + (q.get('faint') || '1f6f5c'),
+  showField: true, font: 'monospace',
 };
+const text = q.get('text') || '';
+const ink = '#' + (q.get('ink') || 'eafff5');
+
+let layers = [];
+function layoutText() {
+  if (!text) { layers = []; return; }
+  const weight = 900;
+  const size = Math.min(canvas.width / (text.length * 0.62), canvas.height * 0.45);
+  const ctx2 = canvas.getContext('2d');
+  ctx2.font = `${weight} ${size}px monospace`;
+  const w = ctx2.measureText(text).width;
+  layers = [{
+    id: 'headline', type: 'text', text, mode: 'bits', visible: true,
+    x: (canvas.width - w) / 2, y: canvas.height / 2 + size * 0.32,
+    size, weight, tracking: 0, color: ink,
+  }];
+}
 
 function resize() {
   doc.width = canvas.width = window.innerWidth;
   doc.height = canvas.height = window.innerHeight;
+  layoutText();
 }
 window.addEventListener('resize', resize);
 resize();
@@ -32,7 +52,7 @@ let last = performance.now();
 function frame(now) {
   t += ((now - last) / 1000) * 0.6;
   last = now;
-  renderCanvas(ctx, doc, []);
+  renderCanvas(ctx, doc, layers);
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
