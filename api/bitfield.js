@@ -4,8 +4,7 @@ import { fileURLToPath } from "node:url";
 import { renderCanvas } from "../js/engine.js";
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
-GlobalFonts.registerFromPath(path.join(dir, "fonts/JetBrainsMono-Regular.ttf"), "JetBrains Mono");
-GlobalFonts.registerFromPath(path.join(dir, "fonts/JetBrainsMono-Bold.ttf"), "JetBrains Mono");
+GlobalFonts.registerFromPath(path.join(dir, "fonts/Canela-Regular.ttf"), "Canela");
 
 // engine.js is written for a browser; give it just enough of `document` to run headless.
 globalThis.document = {
@@ -24,7 +23,7 @@ function layoutHeadline(width, height, text, ink) {
   return [{
     id: "headline", type: "text", text, mode: "bits", visible: true,
     x: marginX, y: marginY + size * 0.78,
-    size, weight: 900, tracking: 0, color: ink,
+    size, weight: 400, tracking: 0, color: ink,
   }];
 }
 
@@ -46,9 +45,9 @@ export default function handler(req, res) {
     bg: hex(q.bg, "0a0f14"),
     faint: hex(q.faint, "1f6f5c"),
     showField: true,
-    font: "JetBrains Mono",
+    font: "Canela",
   };
-  const layers = layoutHeadline(width, height, q.text || "", hex(q.ink, "6fae9c"));
+  const layers = layoutHeadline(width, height, q.text || "", hex(q.ink, "3d7a68"));
 
   const canvas = createCanvas(width, height);
   renderCanvas(canvas.getContext("2d"), doc, layers);
