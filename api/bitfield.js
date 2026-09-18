@@ -19,12 +19,11 @@ globalThis.document = {
 function layoutHeadline(width, height, text, ink) {
   if (!text) return [];
   const size = Math.min(width / (text.length * 0.62), height * 0.45);
-  const probe = createCanvas(1, 1).getContext("2d");
-  probe.font = `900 ${size}px "JetBrains Mono"`;
-  const w = probe.measureText(text).width;
+  const marginX = width * 0.05;
+  const marginY = height * 0.08;
   return [{
     id: "headline", type: "text", text, mode: "bits", visible: true,
-    x: (width - w) / 2, y: height / 2 + size * 0.32,
+    x: marginX, y: marginY + size * 0.78,
     size, weight: 900, tracking: 0, color: ink,
   }];
 }
@@ -49,7 +48,7 @@ export default function handler(req, res) {
     showField: true,
     font: "JetBrains Mono",
   };
-  const layers = layoutHeadline(width, height, q.text || "", hex(q.ink, "eafff5"));
+  const layers = layoutHeadline(width, height, q.text || "", hex(q.ink, "6fae9c"));
 
   const canvas = createCanvas(width, height);
   renderCanvas(canvas.getContext("2d"), doc, layers);

@@ -69,6 +69,31 @@ then open http://localhost:8000/. No build step, no dependencies.
 - **Fraunces** and **JetBrains Mono** load from Google Fonts under the SIL
   Open Font License.
 
+## Server-rendered API
+
+`api/bitfield.js` is a Vercel serverless function that renders a headline
+straight to PNG, for embedding wherever you can't run JS (dashboards, Power
+Apps' Image control, Slack unfurls, etc). It calls the real `renderCanvas`
+from `js/engine.js` headlessly via `@napi-rs/canvas`, so the output matches
+the editor exactly.
+
+Live at `https://bitfield-five.vercel.app/api/bitfield?text=YOUR TEXT`
+
+Query params, all optional:
+
+| param              | default   | meaning                                                           |
+| ------------------ | --------- | ------------------------------------------------------------------ |
+| `text`             | (none)    | headline picked out in bold digits; omit for field only            |
+| `pattern`          | `waves`   | `random`, `gradient down`, `gradient right`, `waves`, `rings`, `vortex`, `checker`, `scanlines` |
+| `density`          | `0.55`    | 0-1, faint field coverage                                          |
+| `cell`             | `16`      | grid cell size in px                                                |
+| `seed`             | `KIOSK`   | RNG seed                                                            |
+| `bg` / `faint` / `ink` | `0a0f14` / `1f6f5c` / `eafff5` | hex colors, no `#`                    |
+| `width` / `height` | `1920` / `1080` | output size in px                                          |
+
+Deploy your own copy: `npm install`, then `vercel --prod` from the repo root
+(zero config, `api/` is picked up automatically).
+
 ## Layout
 
 ```
@@ -79,6 +104,7 @@ js/engine.js    seeded RNG, patterns, mask rasterizer, canvas renderer
 js/app.js       state, undo, panels, canvas interaction
 js/export.js    PNG, SVG, and JSON export
 js/presets.js   starting documents
+api/bitfield.js server-rendered PNG endpoint (see above)
 ```
 
 ## License
